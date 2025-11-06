@@ -1,4 +1,4 @@
-# AsyncChat
+# chatroom-lld
 
 A high-performance, asynchronous chat room application built with C++ and Boost.Asio. This project demonstrates modern C++ networking patterns, allowing multiple clients to connect to a server and exchange messages in real-time.
 
