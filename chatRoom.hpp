@@ -86,5 +86,5 @@ class Session: public Participant, public std::enable_shared_from_this<Session>{
         std::deque<Message> messageQueue; 
 };
 
-#endif CHATROOM_HPP
+#endif //CHATROOM_HPP
 
