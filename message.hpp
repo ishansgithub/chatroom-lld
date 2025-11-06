@@ -20,9 +20,9 @@ class Message {
         Message() : bodyLength(0) {}
         
         // Maximum message body size in bytes
-        enum {maxMessageBytes = 512};
+        static constexpr size_t maxMessageBytes = 512;
         // Header size in bytes (stores body length as 4-digit number)
-        enum {headerLength = 4};
+        static constexpr size_t headerLength = 4;
 
         /**
          * Constructor that creates a message from a string
@@ -97,12 +97,12 @@ class Message {
             newHeader[headerLength] = '\0'; // Null terminate for atoi
             int headerValue = atoi(newHeader);
             
-            // Safety check: reject messages that claim to be too large
-            if(headerValue > maxMessageBytes){
+            // Safety check: reject messages that claim to be too large or negative
+            if(headerValue < 0 || static_cast<size_t>(headerValue) > maxMessageBytes){
                 bodyLength = 0;
                 return false;
             }
-            bodyLength = headerValue;
+            bodyLength = static_cast<size_t>(headerValue);
             return true;
         }
 

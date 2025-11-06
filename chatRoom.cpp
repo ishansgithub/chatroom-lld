@@ -82,7 +82,7 @@ void Session::async_read() {
 
 // Asynchronously write a message to the client
 void Session::async_write(std::string messageBody, size_t messageLength){
-    auto writeHandler = [&](boost::system::error_code errorCode, std::size_t bytesTransferred){
+    auto writeHandler = [&](boost::system::error_code errorCode, std::size_t /* bytesTransferred */){
         if(!errorCode){
             std::cout<<"Data is written to the socket: "<<std::endl;
         }else{

@@ -16,7 +16,7 @@ using boost::asio::ip::tcp;
 void async_read(tcp::socket &socket) {
     auto buffer = std::make_shared<boost::asio::streambuf>();
     boost::asio::async_read_until(socket, *buffer, "\n",
-        [&socket, buffer](boost::system::error_code errorCode, std::size_t bytesTransferred) {
+        [&socket, buffer](boost::system::error_code errorCode, std::size_t /* bytesTransferred */) {
             if (!errorCode) {
                 // Extract the received message from the buffer
                 std::istream inputStream(buffer.get());
