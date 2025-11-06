@@ -7,47 +7,68 @@
 #include <string>
 #include <iostream>
 
-/* 
-headerLength is of 4 bytes and maxMessageBytes can be stored as 512 bytes
-headerLength stores the body length that is the current body length
-messageData stores the headerLength+bodyLength with maximum size of headerLength+maxMessageBytes
-
-client attempts to send message:- It will encode header and put message into the messageData and send messageData
-server gets the message, decodes the header, get the bodylength from the header and hence complete body
-then server sends the message to all the clients connected to that room.
-*/
-
-
+/**
+ * Message class for handling chat room messages
+ * 
+ * Messages are structured with a 4-byte header that stores the body length,
+ * followed by the actual message body (max 512 bytes). This allows the
+ * receiver to know how much data to read before processing the message.
+ */
 class Message {
     public: 
+        // Default constructor - creates empty message
         Message() : bodyLength(0) {}
         
+        // Maximum message body size in bytes
         enum {maxMessageBytes = 512};
+        // Header size in bytes (stores body length as 4-digit number)
         enum {headerLength = 4};
 
+        /**
+         * Constructor that creates a message from a string
+         * Automatically encodes the header with the body length
+         */
         Message(std::string message){
             bodyLength = getNewBodyLength(message.size());
             encodeHeader();
+            // Copy message body after the header
             std::memcpy(messageData + headerLength, message.c_str(), bodyLength);
         };
 
+        /**
+         * Prints the received message to console
+         * Useful for debugging and server-side logging
+         */
         void printMessage(){
             std::string message = getData();
             std::cout<<"Message recieved: "<<message<<std::endl;
         }
 
+        /**
+         * Returns the complete message data (header + body) as a string
+         * This is what gets sent over the network
+         */
         std::string getData(){
             int length = headerLength + bodyLength;
             std::string result(messageData, length);
             return result;
         }
 
+        /**
+         * Extracts and returns only the message body (without header)
+         * This is what the user actually typed
+         */
         std::string getBody(){
             std::string dataString = getData();
+            // Skip the header and extract just the body
             std::string result = dataString.substr(headerLength, bodyLength);
             return result;
         }
 
+        /**
+         * Validates and returns the body length
+         * If message exceeds max size, truncate to maxMessageBytes
+         */
         size_t getNewBodyLength(size_t newLength){
             if(newLength > maxMessageBytes){
                 return maxMessageBytes;
@@ -55,17 +76,28 @@ class Message {
             return newLength;
         }
 
+        /**
+         * Encodes the body length into the 4-byte header
+         * Header format: 4-digit number (e.g., "0050" for 50 bytes)
+         */
         void encodeHeader(){
             char newHeader[headerLength+1] = "";
+            // Format as 4-digit number with leading zeros
             sprintf(newHeader, "%4d", static_cast<int>(bodyLength));
             memcpy(messageData, newHeader, headerLength);
         }
         
+        /**
+         * Decodes the header to extract body length
+         * Returns false if header value is invalid (exceeds max size)
+         */
        bool decodeHeader(){
             char newHeader[headerLength+1] = "";
             strncpy(newHeader, messageData, headerLength);
-            newHeader[headerLength] = '\0';
+            newHeader[headerLength] = '\0'; // Null terminate for atoi
             int headerValue = atoi(newHeader);
+            
+            // Safety check: reject messages that claim to be too large
             if(headerValue > maxMessageBytes){
                 bodyLength = 0;
                 return false;
@@ -74,12 +106,18 @@ class Message {
             return true;
         }
 
+        /**
+         * Returns the current body length
+         */
         size_t getBodyLength(){
             return bodyLength;
         }
 
     private: 
+        // Buffer to store header + message body
+        // Size: 4 bytes (header) + 512 bytes (max body) = 516 bytes total
         char messageData[headerLength+maxMessageBytes];
+        // Current length of the message body (not including header)
         size_t bodyLength;
 };
 
