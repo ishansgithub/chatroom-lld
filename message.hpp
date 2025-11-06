@@ -121,5 +121,5 @@ class Message {
         size_t bodyLength;
 };
 
-#endif MESSAGE_HPP
+#endif // MESSAGE_HPP
 
