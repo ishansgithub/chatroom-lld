@@ -146,8 +146,16 @@ int main(int argc, char *argv[]) {
         // Create room and set up networking
         Room room;
         boost::asio::io_context ioContext;
-        tcp::endpoint endpoint(tcp::v4(), atoi(argv[1]));
-        tcp::acceptor acceptor(ioContext, tcp::endpoint(tcp::v4(), std::atoi(argv[1])));
+        
+        // Parse and validate port number
+        int port = std::stoi(argv[1]);
+        if (port < 1 || port > 65535) {
+            std::cerr << "Error: Port must be between 1 and 65535\n";
+            return 1;
+        }
+        
+        tcp::endpoint endpoint(tcp::v4(), port);
+        tcp::acceptor acceptor(ioContext, tcp::endpoint(tcp::v4(), port));
         
         // Start accepting connections
         accept_connection(ioContext, argv[1], acceptor, room, endpoint);
@@ -155,8 +163,17 @@ int main(int argc, char *argv[]) {
         // Run the event loop
         ioContext.run();
     }
-    catch (std::exception& e) {
+    catch (const std::invalid_argument& e) {
+        std::cerr << "Error: Invalid port number\n";
+        return 1;
+    }
+    catch (const std::out_of_range& e) {
+        std::cerr << "Error: Port number out of range\n";
+        return 1;
+    }
+    catch (const std::exception& e) {
         std::cerr << "Exception: " << e.what() << "\n";
+        return 1;
     }
     return 0;
 }

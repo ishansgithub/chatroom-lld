@@ -48,7 +48,7 @@ class Message {
          * Returns the complete message data (header + body) as a string
          * This is what gets sent over the network
          */
-        std::string getData(){
+        std::string getData() const {
             int length = headerLength + bodyLength;
             std::string result(messageData, length);
             return result;
@@ -58,7 +58,7 @@ class Message {
          * Extracts and returns only the message body (without header)
          * This is what the user actually typed
          */
-        std::string getBody(){
+        std::string getBody() const {
             std::string dataString = getData();
             // Skip the header and extract just the body
             std::string result = dataString.substr(headerLength, bodyLength);
@@ -69,7 +69,7 @@ class Message {
          * Validates and returns the body length
          * If message exceeds max size, truncate to maxMessageBytes
          */
-        size_t getNewBodyLength(size_t newLength){
+        size_t getNewBodyLength(size_t newLength) const {
             if(newLength > maxMessageBytes){
                 return maxMessageBytes;
             }
@@ -109,7 +109,7 @@ class Message {
         /**
          * Returns the current body length
          */
-        size_t getBodyLength(){
+        size_t getBodyLength() const {
             return bodyLength;
         }
 
