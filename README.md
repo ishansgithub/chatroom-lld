@@ -49,6 +49,7 @@ The application follows a client-server architecture with the following key comp
 - 4-byte header stores message body length
 - Maximum message size: 512 bytes
 - Provides methods for header encoding/decoding and body extraction
+- Getter methods are `const` for better code safety and const correctness
 
 #### 2. **Participant Interface** (`chatRoom.hpp`)
 - Abstract base class for all chat room participants
@@ -218,10 +219,13 @@ Total:  29 bytes
 
 ### Error Handling
 
+- **Port Validation**: Port numbers are validated to ensure they are in the valid range (1-65535)
+- **Input Validation**: Uses `std::stoi` for robust port number parsing with proper exception handling
 - Connection errors are caught and logged
 - Invalid messages are rejected (header validation)
 - Client disconnections are handled gracefully
 - Server continues running after client disconnects
+- Specific error messages for invalid port numbers and out-of-range values
 
 ## 🧪 Testing
 
@@ -253,6 +257,8 @@ The project includes a GitHub Actions workflow (`.github/workflows/c-cpp.yml`) t
 - **Naming Convention**: camelCase for variables and functions
 - **Comments**: Comprehensive documentation for classes and methods
 - **Standards**: C++20 with `-Wall -Wextra` warnings enabled
+- **Const Correctness**: Getter methods are marked as `const` for better code safety
+- **Error Handling**: Uses modern C++ exception handling (`std::stoi`, `std::invalid_argument`, `std::out_of_range`)
 
 ### Key Design Patterns
 
